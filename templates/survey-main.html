@@ -3,11 +3,11 @@
 {% block title %} Survey Main Page {% endblock %}
 
 {% block survey_main %} 
-<h1>{{title}}</h1>
+<h1>{{survey.title}}</h1>
 
-<h3>{{instruction}}</h3>
+<h3>{{survey.instructions}}</h3>
 
-<form action="/questions/0">
+<form action="/session-login", method="post">
     <button type="submit">Submit</button>
 </form>
 {%endblock%}

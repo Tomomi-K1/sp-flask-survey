@@ -1,8 +1,14 @@
-from surveys import satisfaction_survey
-from flask import Flask, request, render_template, redirect, flash, url_for
+from surveys import satisfaction_survey as survey
+from flask import Flask, request, render_template, redirect, flash, url_for, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-responses = []
+# key names will　be stored in the session;
+# put here as constants so we're guaranteed to be consistent in
+# our spelling of these
+# RESPONSES_KEY = "responses"
+
+
+# responses = []
 
 app = Flask(__name__)
 
@@ -13,12 +19,19 @@ toolbar = DebugToolbarExtension(app)
 
 @app.route('/')
 def show_survey_info():
-    title = satisfaction_survey.title
-    instruction = satisfaction_survey.instructions
-    return render_template('survey-main.html', title = title, instruction = instruction)
+    """First page of Survey"""
+    # title = survey.title
+    # instruction = survey.instructions
+    # Surveyの一つ一つのKeyごとに、Variableを作って、render Template にパスするより、surveyのオブジェクト自体をvariableとしてパスすることで、survey.title, survery.instructionsにtemplate上でアクセスできる。
+    return render_template('survey-main.html', survey = survey)
 
+@app.route('/session-login', methods=['POST'])
+# we set the methods to post because we need to send session data
+def create_session():
+    session['responses'] = []
+    return redirect('/questions/0')
 
-questions = satisfaction_survey.questions
+questions = survey.questions
 track_num = 0
 
 @app.route('/questions/<int:question_num>')
@@ -40,7 +53,9 @@ def show_question(question_num):
 @app.route('/answer')
 def handle_answer():
     global track_num
+    responses = session['responses']
     responses.append(request.args.get('responses'))
+    session['responses'] = responses
     if track_num == len(questions):
         return render_template ('thankyou.html')
     else:
