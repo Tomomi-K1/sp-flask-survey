@@ -5,10 +5,10 @@
 {% block qestion %} 
     <h3>Question {{question_num}}</h3>
 
-    <p>{{question}}</p>
+    <p>{{question.question}}</p>
 
     <form action="/answer">
-        {% for answer in answers %}
+        {% for answer in question.choices %}
         <label for="{{answer}}">{{answer}}</label>
         <input type="radio" name="responses" id="{{answer}}" value="{{answer}}">
         {% endfor %}

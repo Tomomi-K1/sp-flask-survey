@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 # key names will　be stored in the session;
 # put here as constants so we're guaranteed to be consistent in
 # our spelling of these
-# RESPONSES_KEY = "responses"
-
+RESPONSES_KEY = "responses"
+# ？？Why do we need to do this？？
 
 # responses = []
 
@@ -26,7 +26,7 @@ def show_survey_info():
     return render_template('survey-main.html', survey = survey)
 
 @app.route('/session-login', methods=['POST'])
-# we set the methods to post because we need to send session data
+#？？？ we set the methods to post because we need to send session data？？？？
 def create_session():
     session['responses'] = []
     return redirect('/questions/0')
@@ -40,14 +40,34 @@ def show_question(question_num):
     if question_num ==len(questions):
         return render_template ('thankyou.html')
     elif question_num == track_num:
-        question = questions[question_num].question
-        answers = questions[question_num].choices
+        question = questions[question_num]
+        
         # track_num += 1
-        return render_template('questions.html', question = question, answers = answers)
+        return render_template('questions.html', question = question)
 
     elif question_num != track_num:
         flash('You are trying to access an invalid question')
         return redirect(url_for('show_question', question_num = track_num))
+
+# springboard answer
+# @app.route('/questions/<int:qid') <--URL variable name is kept short
+# def show_question(qid):
+#     """Display current question"""
+#     responses = session.get(RESPONSES_KEY) <--getting a list that contains answers with get method of dict
+
+#     if (responses is None): session.getで値が見当たらなかった場合、Noneとなる。 if there is no item with the key of RESPONSES_KEY
+#         return redirect ('/') -->go back to homepage
+    
+#     if (len(response) == len(survey.questions)): --> answered all questions
+#         return redirect ('/complete') 
+
+#     if (len(response) != qid):  --> qidと返答の数が同じじゃなかったら、Userが自分で勝手に数字をタイプした可能性があるので、Redirectする
+#         flash (f'invalid question id: {qid}.')
+#         return redirect (f'/questions/{len(responses)}')
+
+#     上記の内容に当てはまらない場合は、通常通り質問を表示する
+#     question = questions[qid]
+#         return render_template('questions.html', question = question)
 
 
 @app.route('/answer')
@@ -61,3 +81,26 @@ def handle_answer():
     else:
         track_num += 1
         return redirect (url_for('show_question', question_num = track_num))
+
+# springboard answer
+# @app.route('/answer')
+# def handle_answer():
+#     ==get answers from session and assign that to variable named responses
+#     responses = session['responses']
+#     ==add answer that is filled out by user to responses list
+#     responses.append(request.args.get('responses'))
+#     == assign newly changed(new item added) responses list to session with the key of "responses"
+#     session['responses'] = responses
+#     ==check if length of responses is same as the number of questions in survey
+#     if (len(responses) == len(survey.questions)):
+#         return redirect('/complete')
+#     else:
+#         return redirect (f'/questions/{len(responses)}')
+
+
+
+
+# springboard answer
+# @app.route('/complete')
+# def completed():
+#     return render_template('thankyou.html')
